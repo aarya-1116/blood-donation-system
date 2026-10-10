@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LifeLink - Blood Donation</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #243044;
+  background: #fffafa;
+}
+header {
+  padding: 18px 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-bottom: 1px solid #f4dce2;
+}
+.logo { color: #e51d46; font-size: 25px; font-weight: bold; }
+nav a { margin-left: 20px; color: #394458; text-decoration: none; }
+.hero {
+  padding: 65px 7%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  background: linear-gradient(120deg, #fff0f3, #fffafa);
+}
+.hero h1 { font-size: clamp(35px, 5vw, 56px); margin: 0 0 15px; }
+.hero h1 span { color: #e51d46; }
+.hero p { color: #667085; line-height: 1.7; max-width: 460px; }
+.illustration { font-size: 120px; animation: float 3s infinite ease-in-out; }
+button {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #e51d46;
+  color: white;
+  cursor: pointer;
+  transition: .2s;
+}
+button:hover { background: #bf1235; transform: translateY(-2px); }
+.outline { background: white; color: #e51d46; border: 1px solid #e51d46; }
+section { padding: 40px 7%; }
+h2 { margin-top: 0; }
+.search {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e3dce0;
+  border-radius: 8px;
+  background: white;
+}
+.donors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.card {
+  padding: 20px;
+  background: white;
+  border: 1px solid #f1dfe4;
+  border-radius: 12px;
+  box-shadow: 0 5px 18px #68172b08;
+  animation: appear .4s ease;
+}
+.group {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 8px 0;
+  border-radius: 20px;
+  color: #d71941;
+  background: #ffedf1;
+  font-weight: bold;
+}
+.muted { color: #718096; font-size: 14px; }
+.request-box {
+  max-width: 720px;
+  margin: auto;
+  padding: 25px;
+  background: white;
+  border: 1px solid #f1dfe4;
+  border-radius: 14px;
+}
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+label { display: block; font-size: 13px; margin-bottom: 6px; }
+.full { grid-column: 1 / -1; }
+#message { color: #bf1235; margin-top: 15px; }
+footer {
+  text-align: center;
+  padding: 25px;
+  background: #fff0f3;
+  color: #667085;
+}
+@keyframes float {
+  50% { transform: translateY(-12px); }
+}
+@keyframes appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 650px) {
+  header { padding: 16px 5%; }
+  nav a { margin-left: 8px; font-size: 12px; }
+  .hero { padding: 40px 6%; flex-direction: column; align-items: flex-start; }
+  .illustration { font-size: 80px; align-self: center; }
+  section { padding: 30px 5%; }
+  .search { flex-direction: column; }
+  .donors { grid-template-columns: 1fr; }
+  form { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">♥ LifeLink</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#donors">Donors</a>
+    <a href="#request">Request</a>
+  </nav>
+</header>
+
+<div class="hero" id="home">
+  <div>
+    <h1>Donate Blood,<br><span>Save a Life.</span></h1>
+    <p>One donation can make a difference. Find blood donor profiles
+       by city and blood group, or prepare an emergency blood request.</p>
+    <button onclick="document.getElementById('donors').scrollIntoView()">Find Donors</button>
+    <button class="outline" onclick="document.getElementById('request').scrollIntoView()">Request Blood</button>
+  </div>
+  <div class="illustration">🩸</div>
+</div>
+
+<section id="donors">
+  <h2>Find a Blood Donor</h2>
+  <p class="muted">Search the sample profiles by location and blood group.</p>
+  <div class="search">
+    <input id="city" placeholder="Enter city, e.g. Delhi">
+    <select id="blood">
+      <option value="">All blood groups</option>
+      <option>A+</option><option>A-</option>
+      <option>B+</option><option>B-</option>
+      <option>AB+</option><option>AB-</option>
+      <option>O+</option><option>O-</option>
+    </select>
+    <button onclick="searchDonors()">Search</button>
+  </div>
+  <div class="donors" id="donorList"></div>
+  <p id="empty" class="muted" hidden>No matching sample profiles found.</p>
+  <p class="muted">Demo data only. Donor availability and eligibility are not verified.</p>
+</section>
+
+<section id="request">
+  <div class="request-box">
+    <h2>Request Blood</h2>
+    <p class="muted">Fill in the details to prepare a sample request.</p>
+    <form id="bloodForm">
+      <div>
+        <label for="patient">Patient name *</label>
+        <input id="patient" required maxlength="80" placeholder="Full name">
+      </div>
+      <div>
+        <label for="group">Blood group *</label>
+        <select id="group" required>
+          <option value="">Select group</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+      </div>
+      <div>
+        <label for="place">City / location *</label>
+        <input id="place" required placeholder="Hospital or city">
+      </div>
+      <div>
+        <label for="units">Units required *</label>
+        <select id="units" required>
+          <option value="">Select units</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+        </select>
+      </div>
+      <div>
+        <label for="priority">Urgency *</label>
+        <select id="priority" required>
+          <option value="">Choose urgency</option>
+          <option>Emergency</option>
+          <option>Within 24 hours</option>
+          <option>Planned</option>
+        </select>
+      </div>
+      <div>
+        <label for="phone">Mobile number *</label>
+        <input id="phone" type="tel" inputmode="numeric"
+          pattern="[0-9]{10}" required placeholder="10-digit number">
+      </div>
+      <div class="full">
+        <button type="submit">Prepare Request</button>
+      </div>
+    </form>
+    <p id="message" role="status"></p>
+  </div>
+</section>
+
+<footer>
+  <strong>♥ LifeLink</strong>
+  <p>Together, we can help save lives.</p>
+  <small>Student project · Frontend demonstration</small>
+</footer>
+
+<script>
+const donorData = [
+  { name: "Aarav Sharma", blood: "O+", city: "Delhi" },
+  { name: "Priya Verma", blood: "B+", city: "Noida" },
+  { name: "Rahul Singh", blood: "A+", city: "Ghaziabad" },
+  { name: "Neha Kapoor", blood: "AB+", city: "Delhi" },
+  { name: "Simran Kaur", blood: "O-", city: "Noida" },
+  { name: "Kabir Jain", blood: "B-", city: "Delhi" }
+];
+
+function displayDonors(list) {
+  const container = document.getElementById("donorList");
+  container.replaceChildren();
+  document.getElementById("empty").hidden = list.length > 0;
+
+  list.forEach(donor => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const name = document.createElement("h3");
+    name.textContent = donor.name;
+
+    const group = document.createElement("div");
+    group.className = "group";
+    group.textContent = donor.blood;
+
+    const city = document.createElement("p");
+    city.className = "muted";
+    city.textContent = "📍 " + donor.city;
+
+    const note = document.createElement("p");
+    note.className = "muted";
+    note.textContent = "Sample profile; availability not verified.";
+
+    card.append(name, group, city, note);
+    container.appendChild(card);
+  });
+}
+
+function searchDonors() {
+  const city = document.getElementById("city").value.trim().toLowerCase();
+  const blood = document.getElementById("blood").value;
+
+  const matches = donorData.filter(donor =>
+    donor.city.toLowerCase().includes(city) &&
+    (!blood || donor.blood === blood)
+  );
+
+  displayDonors(matches);
+}
+
+document.getElementById("bloodForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const patient = document.getElementById("patient").value.trim();
+  const blood = document.getElementById("group").value;
+  const place = document.getElementById("place").value.trim();
+  const units = document.getElementById("units").value;
+  const priority = document.getElementById("priority").value;
+
+  document.getElementById("message").textContent =
+    `Demo request prepared for ${patient}: ${blood}, ${units} unit(s), ` +
+    `${place}, priority ${priority}. It has not been sent or saved.`;
+});
+
+displayDonors(donorData);
+</script>
+</body>
+</html>
